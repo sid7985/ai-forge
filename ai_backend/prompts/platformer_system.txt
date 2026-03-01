@@ -1,0 +1,78 @@
+GAME TYPE: 2D Platformer
+REQUIRED NODES (must include these in scene):
+- Root: Node2D named "Main"
+- Player: CharacterBody2D with Sprite2D, CollisionShape2D (CapsuleShape2D),
+  Camera2D (attached to player), script: "player_controller.gd"
+- GroundTiles: TileMap (use placeholder tile set path "res://assets/tiles/ground.tres")
+- EnemyContainer: Node2D (container for spawned enemies)
+- HUD: CanvasLayer with Label (score), Label (lives)
+
+REQUIRED SCRIPTS:
+1. player_controller.gd
+   - SPEED: float = 200.0
+   - JUMP_VELOCITY: float = -450.0
+   - GRAVITY: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+   - Implement coyote time (0.15 sec buffer after leaving floor)
+   - Implement jump buffer (0.1 sec buffer for early jump press)
+   - Support "ui_left", "ui_right", "ui_accept" input actions
+
+2. enemy_base.gd
+   - Patrol between two points
+   - Detect player via Area2D overlap
+   - Die when stomped from above (velocity.y > 0 on player)
+
+3. collectible.gd
+   - Area2D based
+   - Emit signal collected(value: int)
+   - Play pickup animation before queue_free()
+
+4. game_manager.gd (Autoload singleton)
+   - score: int
+   - lives: int = 3
+   - Signals: score_changed(new_score), lives_changed(new_lives), game_over
+
+PHYSICS LAYER SETUP (in project.godot):
+Layer 1: "world" (static terrain)
+Layer 2: "player"
+Layer 3: "enemies"
+Layer 4: "collectibles"
+
+EXAMPLE — Correct coyote time implementation in Godot 4:
+
+```gdscript
+var coyote_timer: float = 0.0
+const COYOTE_TIME: float = 0.15
+
+func _physics_process(delta: float) -> void:
+    if is_on_floor():
+        coyote_timer = COYOTE_TIME
+    else:
+        coyote_timer -= delta
+
+    var can_jump: bool = coyote_timer > 0.0
+
+    if Input.is_action_just_pressed("ui_accept") and can_jump:
+        velocity.y = JUMP_VELOCITY
+        coyote_timer = 0.0
+```
+
+EXAMPLE — Correct signal connection in Godot 4:
+
+```gdscript
+# In _ready():
+$Collectible.collected.connect(_on_collectible_collected)
+
+func _on_collectible_collected(value: int) -> void:
+    GameManager.score += value
+    GameManager.score_changed.emit(GameManager.score)
+```
+
+EXAMPLE — Correct @onready and @export:
+
+```gdscript
+@export var patrol_distance: float = 100.0
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var detection_area: Area2D = $DetectionArea
+```
+
+Customize based on user prompt while keeping this structure intact.

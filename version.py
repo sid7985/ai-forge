@@ -1,0 +1,9 @@
+short_name = "ai_gameforge"
+name = "AI GameForge"
+major = 1
+minor = 0
+patch = 0
+status = "dev"
+module_config = ""
+website = "https://aigameforge.dev"
+docs = "latest"

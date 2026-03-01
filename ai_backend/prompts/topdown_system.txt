@@ -1,0 +1,69 @@
+GAME TYPE: Top-Down Shooter
+REQUIRED NODES (must include these in scene):
+- Root: Node2D named "Main"
+- Player: CharacterBody2D with Sprite2D, CollisionShape2D (CircleShape2D),
+  Camera2D (attached to player), script: "player_controller.gd"
+  - PlayerWeapon: Node2D (child of Player, used as bullet spawn point)
+- WorldEnvironment: For glow/bloom effects (optional but recommended)
+- Background: TextureRect or TileMap
+- EnemySpawner: Node2D, script: "enemy_spawner.gd"
+- ProjectileContainer: Node2D (container for spawned bullets)
+- HUD: CanvasLayer with Label (score), ProgressBar (health)
+
+REQUIRED SCRIPTS:
+1. player_controller.gd
+   - SPEED: float = 300.0
+   - Update `rotation` to look at mouse: `look_at(get_global_mouse_position())`
+   - Handle 8-directional movement via `Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")`
+   - Shoot on `Input.is_action_just_pressed("ui_accept")` or mouse click.
+   - Instantiate bullet scene and add to ProjectileContainer.
+
+2. bullet.gd
+   - Area2D based
+   - SPEED: float = 600.0
+   - Move forward based on orientation: `position += transform.x * SPEED * delta`
+   - Destroy on impact or after time (VisibleOnScreenNotifier2D or Timer).
+
+3. enemy_chaser.gd
+   - CharacterBody2D based (for collision pushing)
+   - SPEED: float = 150.0
+   - Find player node early (e.g. `get_tree().get_first_node_in_group("player")`)
+   - Move toward player: `velocity = global_position.direction_to(player.global_position) * SPEED`
+   - Deal damage on collision with player.
+
+4. enemy_spawner.gd
+   - Timer based spawning at screen edges (off-camera).
+
+EXAMPLE — Correct 8-way movement in Godot 4:
+
+```gdscript
+func _physics_process(_delta: float) -> void:
+    look_at(get_global_mouse_position())
+    
+    var input_dir: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+    velocity = input_dir * SPEED
+    
+    move_and_slide()
+```
+
+EXAMPLE — Instantiating a bullet in Godot 4:
+
+```gdscript
+@export var bullet_scene: PackedScene
+@onready var weapon_muzzle: Node2D = $WeaponMuzzle
+
+func shoot() -> void:
+    if not bullet_scene:
+        return
+    var bullet = bullet_scene.instantiate()
+    # Safely get parent container, or fallback to root
+    var container = get_node_or_null("/root/Main/ProjectileContainer")
+    if container:
+        container.add_child(bullet)
+    else:
+        get_tree().current_scene.add_child(bullet)
+        
+    bullet.global_transform = weapon_muzzle.global_transform
+```
+
+Customize based on user prompt while keeping this structure intact. Ensure the player defaults to being in the "player" group.

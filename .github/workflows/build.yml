@@ -1,0 +1,58 @@
+name: AI GameForge Build Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [created]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install SCons
+        run: pip install scons
+        
+      - name: Build for Windows
+        run: scons platform=windows target=editor 
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai_gameforge_windows
+          path: bin/godot.windows.editor.x86_64.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install SCons
+        run: pip install scons
+        
+      - name: Build for macOS
+        run: scons platform=macos target=editor
+        
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai_gameforge_macos
+          path: bin/godot.macos.editor.universal

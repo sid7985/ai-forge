@@ -1,0 +1,39 @@
+TASK: Apply a surgical patch to the existing game spec based on user instruction.
+RULE: Only change what the instruction explicitly requires. Leave everything else identical.
+RULE: Return ONLY a JSON patch operations array. No full scene spec.
+
+PATCH OPERATION SCHEMA:
+[
+  {
+    "op": "replace_constant",    // replace_constant | add_function | modify_function | add_variable
+    "target_script": "player_controller.gd",
+    "target_identifier": "JUMP_VELOCITY",     // Required for replace_constant
+    "new_value": "-600.0",                    // Required for replace_constant
+    "function_name": "_physics_process",      // Required for modify_function
+    "new_body": "func _physics_process(delta):\n\tpass", // Required for modify_function
+    "function_code": "func new_thing():\n\tpass", // Required for add_function
+    "var_line": 5,                            // Required for add_variable (line to insert after)
+    "variable_declaration": "var test = 1",   // Required for add_variable
+    "reason": "User asked for higher jump"
+  }
+]
+
+EXAMPLE: "Make the player jump higher"
+```json
+[
+  {
+    "op": "replace_constant",
+    "target_script": "player_controller.gd",
+    "target_identifier": "JUMP_VELOCITY",
+    "new_value": "-600.0",
+    "reason": "Increased jump velocity to make player jump higher"
+  }
+]
+```
+
+CURRENT SCENE SPEC (Read-only context):
+{current_scene_spec}
+
+USER INSTRUCTION: "{user_instruction}"
+
+Respond ONLY with the JSON array of patch operations. No markdown or explanation.

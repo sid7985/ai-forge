@@ -1,0 +1,22 @@
+Import("env")
+Import("env_modules")
+
+env_ai = env_modules.Clone()
+
+# Set so we can find our own headers easily
+env_ai.Append(CPPPATH=["#modules/ai_gameforge"])
+
+sources = [
+    "register_types.cpp",
+]
+
+editor_sources = [
+    "editor/ai_gameforge_plugin.cpp",
+    "editor/ai_forge_dock.cpp",
+    "editor/ai_http_client.cpp",
+    "backend/launcher.cpp",
+]
+
+if env.editor_build:
+    env_ai.add_source_files(env.modules_sources, sources)
+    env_ai.add_source_files(env.modules_sources, editor_sources)

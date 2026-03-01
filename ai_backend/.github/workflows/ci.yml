@@ -1,0 +1,43 @@
+name: AI GameForge CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          cd ai_backend
+          pip install -r requirements-minimal.txt
+          pip install pytest pytest-asyncio pytest-cov
+
+      - name: Run unit tests
+        run: |
+          PYTHONPATH=$(pwd) pytest tests/ -v --cov=ai_backend --cov-report=xml -m "not e2e"
+          
+      - name: Validate GDScript formats
+        run: |
+          pip install gdtoolkit==4.3.1
+          # Assuming we add fixtures later: gdparse tests/fixtures/*.gd
+
+  test-plugin:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Import project (check for GDScript errors)
+        run: |
+          godot --headless --import --path godot_plugin/ 2>&1 || exit 1
