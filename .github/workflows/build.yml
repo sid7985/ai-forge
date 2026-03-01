@@ -24,6 +24,9 @@ jobs:
       - name: Install SCons
         run: pip install scons
         
+      - name: Install D3D12 SDK
+        run: python misc/scripts/install_d3d12_sdk_windows.py
+
       - name: Build for Windows
         run: scons platform=windows target=editor 
 
@@ -48,6 +51,9 @@ jobs:
       - name: Install SCons
         run: pip install scons
         
+      - name: Install Vulkan SDK
+        run: sh misc/scripts/install_vulkan_sdk_macos.sh
+
       - name: Build for macOS
         run: scons platform=macos target=editor
         
