@@ -15,20 +15,20 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: Install SCons
         run: pip install scons
-        
+
       - name: Install D3D12 SDK
         run: python misc/scripts/install_d3d12_sdk_windows.py
 
       - name: Build for Windows
-        run: scons platform=windows target=editor 
+        run: scons platform=windows target=editor
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -42,21 +42,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: Install SCons
         run: pip install scons
-        
+
       - name: Install Vulkan SDK
         run: sh misc/scripts/install_vulkan_sdk_macos.sh
 
       - name: Build for macOS
         run: scons platform=macos target=editor
-        
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
