@@ -395,3 +395,13 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 *.generated.props
+
+# Downloaded engine builds and CI logs
+engine_builds/
+*.zip
+github_logs*/
+macos_logs.txt
+windows_log.txt
+logs*.zip
+artifacts.json
+
