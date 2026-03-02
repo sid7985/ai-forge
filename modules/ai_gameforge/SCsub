@@ -14,6 +14,7 @@ editor_sources = [
     "editor/ai_gameforge_plugin.cpp",
     "editor/ai_forge_dock.cpp",
     "editor/ai_http_client.cpp",
+    "editor/ai_sse_client.cpp",
     "backend/launcher.cpp",
 ]
 
