@@ -32,13 +32,9 @@ void AISSEClient::connect_to_stream(const String &url) {
 
 void AISSEClient::_process(double delta) {
     if (http_req->get_http_client_status() == HTTPClient::STATUS_BODY) {
-        // Read available chunks manually
-        while (http_req->get_body_size() > 0) {
-            PackedByteArray chunk = http_req->get_downloaded_bytes(); // Assuming a custom getter or buffer
-            // For MVP Godot 4 standard HTTPRequest: It buffers body. 
-            // In a real implementation we'd use the StreamPeer/HTTPClient directly to read byte-by-byte SSE.
-            // For this scaffold, we simulate via string parsing when data becomes ready at the end or poll if possible.
-        }
+        // For MVP Godot 4 standard HTTPRequest: It buffers body. 
+        // In a real implementation we'd use the StreamPeer/HTTPClient directly to read byte-by-byte SSE.
+        // For this scaffold, we simulate via string parsing when data becomes ready at the end via _on_request_completed.
     }
 }
 
