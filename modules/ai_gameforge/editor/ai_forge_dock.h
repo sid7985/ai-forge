@@ -17,6 +17,9 @@
 #include "scene/gui/item_list.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/label.h"
+#include "scene/gui/panel.h"
+#include "scene/gui/color_rect.h"
+#include "scene/gui/scroll_container.h"
 #include "core/io/config_file.h"
 #include "editor/ai_http_client.h"
 #include "editor/ai_sse_client.h"
@@ -36,7 +39,15 @@ private:
     Button *refine_btn;
     Button *clear_chat_btn;
     ProgressBar *generation_progress;
-    RichTextLabel *agent_log;
+
+    // Agent Brain Monitor
+    VBoxContainer *brain_monitor;
+    struct AgentRow {
+        Label *name_label;
+        Label *status_label;
+        ProgressBar *progress;
+    };
+    AgentRow agent_rows[5];
 
     // Advanced Options
     VBoxContainer *advanced_options_panel;
@@ -77,6 +88,7 @@ private:
     String current_project_path;
     bool is_generating = false;
     bool advanced_visible = false;
+    int current_agent_index = 0;
 
     void _on_generate_pressed();
     void _on_stop_pressed();
@@ -98,6 +110,21 @@ private:
     void _on_health_check_result(bool success, const String &message);
     void _load_settings();
     void _add_history_entry(const String &prompt);
+    void _update_agent_monitor(const String &agent, int status, float progress);
+    void _reset_agent_monitor();
+
+    // Theme helpers
+    Color _deep_void_bg() const { return Color(0.043f, 0.051f, 0.078f); }
+    Color _panel_bg() const { return Color(0.078f, 0.086f, 0.133f); }
+    Color _panel_header() const { return Color(0.102f, 0.114f, 0.168f); }
+    Color _panel_border() const { return Color(0.165f, 0.180f, 0.251f); }
+    Color _neon_cyan() const { return Color(0.0f, 0.898f, 1.0f); }
+    Color _neon_purple() const { return Color(0.616f, 0.306f, 0.867f); }
+    Color _success_green() const { return Color(0.0f, 0.902f, 0.463f); }
+    Color _warning_yellow() const { return Color(1.0f, 0.835f, 0.310f); }
+    Color _error_red() const { return Color(1.0f, 0.090f, 0.267f); }
+    Color _text_primary() const { return Color(0.878f, 0.902f, 0.929f); }
+    Color _text_muted() const { return Color(0.388f, 0.416f, 0.502f); }
 
 protected:
     static void _bind_methods();
