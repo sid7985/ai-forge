@@ -5,7 +5,7 @@
 #include "scene/gui/separator.h"
 #include "scene/gui/label.h"
 #include "scene/gui/scroll_container.h"
-#include "scene/gui/style_box_flat.h"
+#include "scene/resources/style_box_flat.h"
 #include "core/object/callable_method_pointer.h"
 #include "core/object/class_db.h"
 
